@@ -2,7 +2,7 @@
 
 Version: 1.0.1
 
-WoW Forever Beta, Interface 16001. No dependencies or settings.
+WoW Forever Beta, Interface 16001. Requires LH_Tweaks; no settings are needed.
 
 The loyalty bar uses LH_ExpBar's texture, gold color, and border. It is 10 UI pixels high (half of LH_ExpBar), matches the pet mana bar's width, aligns with its right edge, and starts 8 UI pixels above PetFrame's bottom edge. The text to the left of the portrait shows current / maximum loyalty rank and progress in a 10-pixel font with 5 pixels of additional line spacing.
 
@@ -25,3 +25,7 @@ When upgrading from MiniPetStats, replace the old folder and fully restart WoW. 
 - Renamed MiniPetStats to LH_PetStats, including its folder, Lua/TOC filenames, metadata, texture path, named frames and verification-script references.
 - Updated English documentation and references to the renamed LH_ExpBar addon.
 - Loyalty display behavior and existing localized tooltips are unchanged.
+
+## Required core addon
+
+Install and enable **LH_Tweaks** alongside this addon. LH_Tweaks is the shared LiteHawk configuration host and must load first. CurseForge releases must list LH_Tweaks as a required dependency so the client installs it automatically.
