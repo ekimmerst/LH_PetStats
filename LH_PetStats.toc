@@ -1,0 +1,8 @@
+## Interface: 16001
+## Title: LH_PetStats
+## Notes: Pet loyalty beside the pet portrait, with an LH_ExpBar-style bar.
+## Notes-deDE: Pet loyalty beside the pet portrait, with an LH_ExpBar-style bar.
+## Author: LH_PetStats
+## Version: 1.0.1
+
+LH_PetStats.lua
