@@ -1,6 +1,37 @@
+local addonName = ...
+local Addon = {}
+LH_PetStats = Addon
 local MAX_LOYALTY = 6
 local root, bar, fill, label
 local german = GetLocale() == "deDE"
+
+local function GetOptions()
+    LH_PetStatsDB = type(LH_PetStatsDB) == "table" and LH_PetStatsDB or {}
+    for _, key in ipairs({"enabled", "showBar", "showRank"}) do
+        if type(LH_PetStatsDB[key]) ~= "boolean" then LH_PetStatsDB[key] = true end
+    end
+    return LH_PetStatsDB
+end
+function Addon:GetOption(key) return GetOptions()[key] end
+
+local function HideTooltip()
+    if bar and GameTooltip and GameTooltip:IsOwned(bar) then GameTooltip:Hide() end
+end
+
+local function StyleLabel()
+    -- Match objective text's shadow and font flags without the old extra outline.
+    local style = ObjectiveTrackerLineFont or GameFontHighlightSmall
+    if style then
+        label:SetFontObject(style)
+        local font, _, flags = style:GetFont()
+        label:SetFont(font, 10, flags or "")
+    else
+        label:SetFont(STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF", 10, "")
+        label:SetShadowColor(0, 0, 0, 1)
+        label:SetShadowOffset(1, -1)
+    end
+    label:SetTextColor(1, 1, 1, 1)
+end
 
 local function Public(value)
     return not issecretvalue or not issecretvalue(value)
@@ -57,19 +88,24 @@ end
 
 local function Refresh()
     if not root then return end
+    local options = GetOptions()
+    if not options.enabled then root:Hide(); HideTooltip(); return end
+    StyleLabel()
     local _, class = UnitClass("player")
     if class ~= "HUNTER" or not UnitExists("pet") then root:Hide(); return end
     local name, rank = ReadLoyalty()
     if not name or not Layout() then root:Hide(); return end
     local percent = rank and rank / MAX_LOYALTY * 100
     fill:SetValue(percent or 0)
-    label:SetText(string.format("%s / %d\n%s", rank or "?", MAX_LOYALTY,
-        percent and string.format("%.0f %%", percent) or "-- %"))
+    label:SetText(string.format("%s / %d", rank or "?", MAX_LOYALTY))
+    bar:SetShown(options.showBar)
+    label:SetShown(options.showRank)
+    if not options.showBar then HideTooltip() end
     root:Show()
 end
 
 local function CreateUI()
-    if root or not PetFrame then return end
+    if root or not PetFrame or not Addon:GetOption("enabled") then return end
     root = CreateFrame("Frame", "LH_PetStatsFrame", PetFrame)
     root:SetAllPoints(PetFrame)
     root:EnableMouse(false)
@@ -91,12 +127,9 @@ local function CreateUI()
     fill:SetMinMaxValues(0, 100)
     fill:EnableMouse(false)
     label = root:CreateFontString(nil, "OVERLAY")
-    label:SetFont(STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF", 10, "OUTLINE")
-    label:SetSpacing(5)
+    StyleLabel()
     label:SetJustifyH("RIGHT")
     label:SetTextColor(1, 1, 1, 1)
-    label:SetShadowColor(0, 0, 0, 1)
-    label:SetShadowOffset(1, -1)
     bar:EnableMouse(true)
     bar:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
@@ -108,24 +141,49 @@ local function CreateUI()
             or "As in NetherPetXP: percent = current loyalty rank / 6. Progress within a rank is not available in the beta.", 1, 1, 1, true)
         GameTooltip:Show()
     end)
-    bar:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    bar:SetScript("OnLeave", HideTooltip)
+    bar:SetScript("OnHide", HideTooltip)
+    root:SetScript("OnHide", HideTooltip)
     root:Hide()
 end
 
+function Addon:SetOption(key, value)
+    if key ~= "enabled" and key ~= "showBar" and key ~= "showRank" then return end
+    GetOptions()[key] = value == true
+    CreateUI()
+    Refresh()
+    if self.RefreshSettings then self:RefreshSettings() end
+end
+
 local events = CreateFrame("Frame")
-for _, event in ipairs({ "PLAYER_LOGIN", "PLAYER_ENTERING_WORLD", "UNIT_PET", "UNIT_HAPPINESS",
+for _, event in ipairs({ "ADDON_LOADED", "PLAYER_LOGIN", "PLAYER_ENTERING_WORLD", "UNIT_PET", "UNIT_HAPPINESS",
     "PET_UI_UPDATE", "UI_SCALE_CHANGED", "DISPLAY_SIZE_CHANGED", "PLAYER_REGEN_ENABLED" }) do
     events:RegisterEvent(event)
 end
-events:SetScript("OnEvent", function()
+events:SetScript("OnEvent", function(_, event, name)
+    if event == "ADDON_LOADED" and name == addonName then GetOptions() end
     CreateUI()
     Refresh()
 end)
 local elapsedSinceCheck = 0
 events:SetScript("OnUpdate", function(_, elapsed)
+    if not Addon:GetOption("enabled") then elapsedSinceCheck = 0; return end
     elapsedSinceCheck = elapsedSinceCheck + elapsed
     if elapsedSinceCheck < 0.5 then return end
     elapsedSinceCheck = 0
     CreateUI()
     Refresh()
 end)
+
+SLASH_LH_PETSTATS1 = "/lh_petstats"
+SlashCmdList.LH_PETSTATS = function(message)
+    local command = (message or ""):lower():match("^%s*(.-)%s*$")
+    if command == "on" or command == "off" then
+        Addon:SetOption("enabled", command == "on")
+        print(Addon:GetOption("enabled") and "LH_PetStats: Enabled." or "LH_PetStats: Disabled.")
+    elseif command == "" and Addon.category then
+        Settings.OpenToCategory(Addon.category:GetID())
+    else
+        print("LH_PetStats: /lh_petstats on | off. Use /lh_petstats to open settings.")
+    end
+end

@@ -1,9 +1,14 @@
 ## Interface: 16001
 ## Dependencies: LH_Tweaks
-## Title: LH_PetStats
+## Title: LH PetStats
+## Group: LH_Tweaks
+## X-Part-Of: LH_Tweaks
+## IconTexture: Interface\AddOns\LH_PetStats\Media\Icon
 ## Notes: Pet loyalty beside the pet portrait, with an LH_ExpBar-style bar.
 ## Notes-deDE: Pet loyalty beside the pet portrait, with an LH_ExpBar-style bar.
 ## Author: LH_PetStats
-## Version: 1.0.1
+## Version: 1.1.0
+## SavedVariablesPerCharacter: LH_PetStatsDB
 
 LH_PetStats.lua
+Settings.lua
