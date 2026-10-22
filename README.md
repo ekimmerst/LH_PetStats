@@ -1,5 +1,7 @@
 <h1 style="color: #d9a94b;">LH PetStats</h1>
 
+<p>Show your hunter pet's loyalty rank beside its portrait, with an optional compact loyalty bar.</p>
+
 <p>A small loyalty readout for hunter pets, placed beside Blizzard's pet portrait. It gives that useful bit of pet information a home in the existing UI.</p>
 
 <h2 style="color: #73c9c4;">What it shows</h2>
