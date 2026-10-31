@@ -13,6 +13,9 @@ local function GetOptions()
     return LH_PetStatsDB
 end
 function Addon:GetOption(key) return GetOptions()[key] end
+function Addon:IsAvailable()
+    return type(C_PetInfo and C_PetInfo.GetPetLoyalty or GetPetLoyalty) == "function"
+end
 
 local function HideTooltip()
     if bar and GameTooltip and GameTooltip:IsOwned(bar) then GameTooltip:Hide() end
@@ -158,7 +161,9 @@ end
 local events = CreateFrame("Frame")
 for _, event in ipairs({ "ADDON_LOADED", "PLAYER_LOGIN", "PLAYER_ENTERING_WORLD", "UNIT_PET", "UNIT_HAPPINESS",
     "PET_UI_UPDATE", "UI_SCALE_CHANGED", "DISPLAY_SIZE_CHANGED", "PLAYER_REGEN_ENABLED" }) do
-    events:RegisterEvent(event)
+    if not (C_EventUtils and C_EventUtils.IsEventValid) or C_EventUtils.IsEventValid(event) then
+        events:RegisterEvent(event)
+    end
 end
 events:SetScript("OnEvent", function(_, event, name)
     if event == "ADDON_LOADED" and name == addonName then GetOptions() end
@@ -177,6 +182,10 @@ end)
 
 SLASH_LH_PETSTATS1 = "/lh_petstats"
 SlashCmdList.LH_PETSTATS = function(message)
+    if not Addon:IsAvailable() then
+        print("LH_PetStats: Pet loyalty data is unavailable on this client.")
+        return
+    end
     local command = (message or ""):lower():match("^%s*(.-)%s*$")
     if command == "on" or command == "off" then
         Addon:SetOption("enabled", command == "on")

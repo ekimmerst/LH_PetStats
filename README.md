@@ -18,6 +18,8 @@
 
 <p>Open <strong>Options → AddOns → LH Tweaks → LH PetStats</strong> to choose what is shown. The options are saved per character.</p>
 
+<p><strong>Retail 12.1.5:</strong> Hunter pet loyalty is not exposed by the Retail client. The addon loads, but keeps the loyalty display hidden when that data is unavailable.</p>
+
 <h2 style="color: #73c9c4;">More LH addons</h2>
 
 <p>Choose only the pieces you want. Each companion addon also requires LH Tweaks.</p>

@@ -11,6 +11,10 @@ end
 
 local function Build(category, layout)
     Addon.category = category
+    if not Addon:IsAvailable() then
+        layout:AddInitializer(CreateSettingsListSectionHeaderInitializer("Pet loyalty data is unavailable on this client"))
+        return
+    end
     layout:AddInitializer(CreateSettingsListSectionHeaderInitializer("Pet loyalty"))
     local parent
     for _, option in ipairs({
