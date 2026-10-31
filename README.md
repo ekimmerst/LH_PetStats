@@ -45,5 +45,13 @@
 
 <p><strong>LH Tweaks is required</strong> and must be installed alongside LH PetStats. I built this for my own hunter and hope it helps other pet owners too. If loyalty information is missing or looks wrong, please tell me in the CurseForge comments.</p>
 
+<h2 style="color: #73c9c4;">Changelog</h2>
+
+<p><strong>1.1.0 - Forever</strong></p>
+
+<ul>
+  <li>No gameplay changes in this Forever branch; hunter pet loyalty text and the optional bar remain available.</li>
+</ul>
+
 <hr>
-<p><sup>*</sup> Implemented with the help of Codex and GPT-6-SOL and tested by me as thoroughly as I could in the WoW beta client. Pet data can vary; please report anything you notice.</p>
+<p><sup>*</sup> Implemented with the help of Codex and GPT-6-SOL. Pet data can vary; please report anything you notice.</p>
